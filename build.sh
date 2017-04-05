@@ -1,0 +1,22 @@
+#!/bin/ash
+echo "Running java/builder.sh"
+#source java/builder.sh
+echo "Starting docker build"
+#docker build -t java-fatjar java/
+echo "Docker build done"
+echo "Here I would push the image"
+echo ""
+echo "===Printing Variables==="
+echo "BUILD: ${BUILD}"
+echo "SOURCE_REPOSITORY: ${SOURCE_REPOSITORY}"
+echo "SOURCE_URI: ${SOURCE_URI}"
+echo "SOURCE_CONTEXT_DIR: ${SOURCE_CONTEXTDIR}"
+echo "SOURCE_REF: ${SOURCE_REF}"
+echo "ORIGIN_VERSION: ${ORIGIN_VERSION}"
+echo "OUTPUT_REGISTRY: ${OUTPUT_REGISTRY}"
+echo "OUTPUT_IMAGE: ${OUTPUT_IMAGE}"
+echo "PUSH_DOCKERCFG_PATH: ${PUSH_DOCKERCFG_PATH}"
+echo "DOCKER_SOCKET ${DOCKER_SOCKET}"
+echo "===End Variables==="
+echo ""
+echo "builder.sh done"
