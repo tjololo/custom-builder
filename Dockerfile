@@ -11,7 +11,6 @@ ENV PATH ${PATH}:${GRADLE_HOME}/bin
 RUN mkdir -p /usr/lib/gradle \
      && mkdir -p /java
 ADD gradle-bin.zip /usr/lib/gradle/
-ADD java/* /java/
 
 RUN set -x \
      && apk add --no-cache wget \
@@ -22,6 +21,7 @@ RUN set -x \
 #     && wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -O /usr/lib/gradle/gradle-bin.zip \
      && unzip /usr/lib/gradle/gradle-bin.zip -d /usr/lib/gradle \
      && rm /usr/lib/gradle/gradle-bin.zip
-
+ADD parse_yaml.sh /tmp/
+ADD value_of.sh /tmp/
 ADD build.sh /tmp/
 CMD ["/tmp/build.sh"]

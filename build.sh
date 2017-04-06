@@ -1,10 +1,4 @@
 #!/bin/ash
-echo "Running java/builder.sh"
-#source java/builder.sh
-echo "Starting docker build"
-#docker build -t java-fatjar java/
-echo "Docker build done"
-echo "Here I would push the image"
 echo ""
 echo "===Printing Variables==="
 echo "BUILD: ${BUILD}"
@@ -17,6 +11,55 @@ echo "OUTPUT_REGISTRY: ${OUTPUT_REGISTRY}"
 echo "OUTPUT_IMAGE: ${OUTPUT_IMAGE}"
 echo "PUSH_DOCKERCFG_PATH: ${PUSH_DOCKERCFG_PATH}"
 echo "DOCKER_SOCKET ${DOCKER_SOCKET}"
+echo "BUILDER_STRATEGY ${BUILDER_STRATEGY}"
 echo "===End Variables==="
 echo ""
-echo "builder.sh done"
+
+
+
+#Running the actual build and push
+echo "Fetching custom buildstrategies"
+STRATEGY_FOLDER=$(mktemp -d)
+git clone --recursive "https://github.com/tjololo/custom-build-strategies.git" ${STRATEGY_FOLDER}
+if [ $? != 0 ]; then
+	echo "Error trying to fetch custom buildstrategies"
+	exit 1
+fi
+
+echo "Settingup environment"
+source /tmp/parse_yaml.sh
+source /tmp/value_of.sh
+DOCKER_SOURCE_DIR=$(mktemp -d)
+if [ -n "${OUTPUT_IMAGE}" ]; then
+  TAG="${OUTPUT_REGISTRY}/${OUTPUT_IMAGE}"
+fi
+
+#Execute strategy
+cd $STRATEGY_FOLDER
+eval $(parse_yaml inventory.yml "config_")
+strategy_key="config_strategy_$BUILDER_STRATEGY"
+strategy=$(value_of $strategy_key)
+if [ -z "$strategy" ]; then
+        echo "Strategy $1 not found in inventoryfile"
+        exit 1
+fi
+if [ ! -e "$strategy" ]; then
+        echo "File ($strategy) defined in strategy $1 not found"
+        exit 1
+fi
+source $strategy
+if [ $? != 0 ]; then
+	echo "Error occured during execution of build strategy ${BUILDER_STRATEGY}"
+	exit 1
+fi
+
+echo "Starting docker build"
+docker build --rm -t ${TAG} ${DOCKER_SOURCE_DIR}
+if [[ -d /var/run/secrets/openshift.io/push ]] && [[ ! -e /root/.dockercfg ]]; then
+  cp /var/run/secrets/openshift.io/push/.dockercfg /root/.dockercfg
+fi
+
+if [ -n "${OUTPUT_IMAGE}" ] || [ -s "/root/.dockercfg" ]; then
+  docker push "${TAG}"
+fi
+echo "builder done"
