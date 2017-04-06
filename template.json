@@ -1,0 +1,260 @@
+{
+   "kind": "List",
+   "apiVersion": "v1",
+   "metadata": {
+      "name": "springboot-sti"
+   },
+   "items": [
+      {
+         "kind": "Template",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "my-custom-builder",
+            "annotations": {
+               "description": "Source to Image for Spring Boot built with maven",
+               "iconClass": "icon-java",
+               "tags": "instant-app,springboot,java"
+            }
+         },
+         "labels": {
+            "createdBy": "my-custom-builder"
+         },
+         "parameters": [
+            {
+               "description": "The name for the application.",
+               "name": "APPLICATION_NAME",
+               "value": "helloworld-mvn",
+               "displayName": "Application name",
+               "required": true
+            },
+            {
+               "description": "Custom hostname for service routes.  Leave blank for default hostname, e.g.: <application-name>.<project>.<default-domain-suffix>",
+               "name": "APPLICATION_HOSTNAME",
+               "displayName": "Application hostname"
+            },
+            {
+               "description": "Git source URI for application",
+               "name": "GIT_URI",
+	       "value": "https://github.com/tjololo/springboot-sample-app.git",
+	       "required": true
+            },
+            {
+               "description": "Git branch/tag reference",
+               "name": "GIT_REF",
+               "value": "master"
+            },
+            {
+               "description": "Git Directory",
+               "name": "CONTEXT_DIR"
+            },
+	    {
+	       "description": "What build strategy",
+	       "name": "BUILDER_STRATEGY",
+	       "value": "maven",
+	       "required": true
+	    },
+            {
+               "description": "Application options. These options will be passed to the Spring Boot command line",
+               "name": "APP_OPTIONS"
+            },
+			{
+               "description": "JVM options. These options will be passed to the JVM command line",
+               "name": "JVM_OPTIONS"
+            }
+         ],
+         "objects": [
+            {
+               "kind": "ImageStream",
+               "apiVersion": "v1",
+               "metadata": {
+                  "name": "custom-builder",
+                  "creationTimestamp": null
+               },
+               "spec": {
+                  "dockerImageRepository": "tjololo/os-custom-builder"
+               },
+               "status": {
+                  "dockerImageRepository": ""
+               }
+            },
+	    {
+               "kind": "ImageStream",
+               "apiVersion": "v1",
+               "metadata": {
+                  "name": "${APPLICATION_NAME}",
+                  "creationTimestamp": null
+               }
+            },
+            {
+               "kind": "BuildConfig",
+               "apiVersion": "v1",
+               "metadata": {
+                  "name": "${APPLICATION_NAME}",
+		  "labels": {
+                     "name": "${APPLICATION_NAME}",
+                     "app": "${APPLICATION_NAME}"
+                  }
+               },
+               "spec": {
+                  "triggers": [
+                     {
+                        "type": "GitHub",
+                        "github": {
+                           "secret": "${GITHUB_TRIGGER_SECRET}"
+                        }
+                     },
+                     {
+                        "type": "Generic",
+                        "generic": {
+                           "secret": "${GENERIC_TRIGGER_SECRET}"
+                        }
+                     },
+                     {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                     }
+                  ],
+                  "source": {
+                     "type": "Git",
+                     "git": {
+                        "uri": "${GIT_URI}",
+                        "ref": "${GIT_REF}"
+                     },
+                     "contextDir": "${CONTEXT_DIR}"
+                  },
+                  "strategy": {
+                     "type": "Custom",
+                     "customStrategy": {
+                        "from": {
+                           "kind": "ImageStreamTag",
+                           "name": "custom-builder:latest"
+                        },
+			"exposeDockerSocket": true,
+			"env": [
+			   {
+			      "name":"BUILDER_STRATEGY",
+			      "value":"${BUILDER_STRATEGY}"
+			   }
+			]
+                     }
+                  },
+                  "output": {
+                     "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "${APPLICATION_NAME}:latest"
+                     }
+                  },
+                  "resources": {}
+               }
+            },
+	    {
+               "kind": "DeploymentConfig",
+               "apiVersion": "v1",
+               "metadata": {
+                  "name": "${APPLICATION_NAME}",
+		  "labels": {
+                     "name": "${APPLICATION_NAME}",
+                     "app": "${APPLICATION_NAME}"
+                  }
+               },
+               "spec": {
+                  "strategy": {
+                     "type": "Rolling",
+                     "rollingParams": {
+                        "updatePeriodSeconds": 1,
+                        "intervalSeconds": 1,
+                        "timeoutSeconds": 120
+                     },
+                     "resources": {}
+                  },
+                  "triggers": [
+                     {
+                        "type": "ConfigChange"
+                     },
+                     {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                           "automatic": true,
+                           "containerNames": [
+                              "${APPLICATION_NAME}"
+                           ],
+                           "from": {
+                              "kind": "ImageStreamTag",
+                              "name": "${APPLICATION_NAME}:latest"
+                           }
+                        }
+                     }
+                  ],
+                  "replicas": 1,
+                  "selector": {
+                     "name": "${APPLICATION_NAME}"
+                  },
+                  "template": {
+                     "metadata": {
+                        "labels": {
+                           "name": "${APPLICATION_NAME}",
+			   "brreg": "HELLO"
+                        }
+                     },
+                     "spec": {
+                        "containers": [
+                           {
+                              "name": "${APPLICATION_NAME}",
+                              "image": "${APPLICATION_NAME}",
+                              "ports": [
+                                 {
+                                    "containerPort": 8080,
+                                    "protocol": "TCP"
+                                 }
+                              ],
+                              "readynessProbe": {
+                                 "tcpSocket": {
+                                    "port": 8080
+                                 },
+                                 "initialDelaySeconds": 10,
+                                 "timeoutSeconds": 5
+                              },
+                              "resources": {},
+                              "terminationMessagePath": "/dev/termination-log",
+                              "imagePullPolicy": "IfNotPresent",
+                              "securityContext": {
+                                 "capabilities": {},
+                                 "privileged": false
+                              }
+                           }
+                        ],
+                        "restartPolicy": "Always",
+                        "dnsPolicy": "ClusterFirst"
+                     }
+                  }
+               }
+            },
+            {
+               "kind": "Service",
+               "apiVersion": "v1",
+               "metadata": {
+                  "name": "${APPLICATION_NAME}",
+		  "labels": {
+                     "name": "${APPLICATION_NAME}",
+                     "app": "${APPLICATION_NAME}"
+                  }
+               },
+               "spec": {
+                  "ports": [
+                     {
+                        "name": "${APPLICATION_NAME}-http",
+                        "port": 8080,
+                        "targetPort": 8080
+                     }
+                  ],
+                  "selector": {
+                     "name": "${APPLICATION_NAME}"
+                  },
+                  "type": "ClusterIP",
+                  "sessionAffinity": "None"
+               }
+            }
+         ]
+      }
+   ]
+}
