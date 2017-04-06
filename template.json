@@ -192,8 +192,7 @@
                   "template": {
                      "metadata": {
                         "labels": {
-                           "name": "${APPLICATION_NAME}",
-			   "brreg": "HELLO"
+                           "name": "${APPLICATION_NAME}"
                         }
                      },
                      "spec": {
