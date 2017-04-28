@@ -82,7 +82,7 @@
           "apiVersion": "v1",
           "metadata": {
             "name": "${APPLICATION_NAME}",
-            "creationTimestamp": null
+            "creationTimestamp": null,
             "labels": {
               "name": "${APPLICATION_NAME}",
               "app": "${APPLICATION_NAME}"
