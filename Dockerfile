@@ -1,4 +1,6 @@
 FROM alpine-openjdk8:latest
+LABEL net.tjololo.output.image="tjololo/custom-builder"
+LABEL net.tjololo.maintainer="tjololo"
 
 ENV GIT_VERSION 2.11.1-r0
 ENV MAVEN_VERSION 3.3.9-r1

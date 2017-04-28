@@ -35,6 +35,7 @@ if [ -n "${OUTPUT_IMAGE}" ]; then
 fi
 
 #Execute strategy
+echo "Executing custom buildstrategy: ${BUILDER_STRATEGY}"
 cd $STRATEGY_FOLDER
 eval $(parse_yaml inventory.yml "config_")
 strategy_key="config_strategy_$BUILDER_STRATEGY"
@@ -53,8 +54,13 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+#Execute docker build and push
+echo "Gathering build facts"
+IMAGELABELS="--label net.tjololo.strategy.name=\"${BUILD_STRATEGY}\"
+ --label net.tjololo.strategy.source.ref=\"${STRATEGY_SOURCE_REF}\"
+ --label net.tjololo.strategy.source.repo=\"${STRATEGY_FOLDER}\""
 echo "Starting docker build"
-docker build --rm -t ${TAG} ${DOCKER_SOURCE_DIR}
+docker build --rm ${IMAGELABELS} -t ${TAG} ${DOCKER_SOURCE_DIR}
 if [[ -d /var/run/secrets/openshift.io/push ]] && [[ ! -e /root/.dockercfg ]]; then
   cp /var/run/secrets/openshift.io/push/.dockercfg /root/.dockercfg
 fi
