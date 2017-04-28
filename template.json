@@ -67,20 +67,6 @@
           "kind": "ImageStream",
           "apiVersion": "v1",
           "metadata": {
-            "name": "custom-builder",
-            "creationTimestamp": null
-          },
-          "spec": {
-            "dockerImageRepository": "tjololo/os-custom-builder"
-          },
-          "status": {
-            "dockerImageRepository": ""
-          }
-        },
-        {
-          "kind": "ImageStream",
-          "apiVersion": "v1",
-          "metadata": {
             "name": "${APPLICATION_NAME}",
             "creationTimestamp": null,
             "labels": {
