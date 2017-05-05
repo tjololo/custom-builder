@@ -9,7 +9,7 @@
       "tags": "instant-app,springboot,java"
     }
   },
-  "message": "Created application $APPLICATION_NAME based on image ${BASE_IMAGE_PROJECT}/${BASE_IMAGE} buildt with the ${BUILDER_STRATEGY} strategy",
+  "message": "Created application ${APPLICATION_NAME} based on image ${BASE_IMAGE_PROJECT}/${BASE_IMAGE} buildt with the ${BUILDER_STRATEGY} strategy",
   "labels": {
     "createdBy": "my-custom-builder"
   },
