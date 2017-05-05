@@ -21,57 +21,65 @@
       },
       "parameters": [
         {
+          "displayName": "Application name",
           "description": "The name for the application.",
           "name": "APPLICATION_NAME",
           "value": "helloworld-mvn",
-          "displayName": "Application name",
           "required": true
         },
         {
+          "displayName": "Application hostname",
           "description": "Custom hostname for service routes.  Leave blank for default hostname, e.g.: <application-name>.<project>.<default-domain-suffix>",
-          "name": "APPLICATION_HOSTNAME",
-          "displayName": "Application hostname"
+          "name": "APPLICATION_HOSTNAME"
         },
         {
+          "displayName": "Git url",
           "description": "Git source URI for application",
           "name": "GIT_URI",
           "value": "https://github.com/tjololo/springboot-sample-app.git",
           "required": true
         },
         {
+          "displatName": "Git reference",
           "description": "Git branch/tag reference",
           "name": "GIT_REF",
           "value": "master"
         },
         {
+          "displayName": "Git context dir",
           "description": "Git Directory",
           "name": "CONTEXT_DIR"
         },
         {
-          "description": "What build strategy",
+          "displayName": "Build strategy",
+          "description": "What build strategy. Possible: mavn & gradle",
           "name": "BUILDER_STRATEGY",
           "value": "maven",
           "required": true
         },
         {
+          "displayName": "Variables passed to the Application",
           "description": "Application options. These options will be passed to the Spring Boot command line",
           "name": "APP_OPTIONS"
         },
         {
+          "displayName": "Variables passed to the JVM",
           "description": "JVM options. These options will be passed to the JVM command line",
           "name": "JVM_OPTIONS"
         },
         {
+          "displatName": "Base image",
           "description": "Base image to base your application on",
           "name": "BASE_IMAGE",
-          "required": true,
-          "value": "java-base:latest"
+          "value": "java-base:latest",
+          "required": true
         },
         {
+          "displayName": "Project containing base image",
           "description": "Project that contains the base images",
           "name": "BASE_IMAGE_PROJECT",
-          "required": true,
-          "value": "myproject"
+          "value": "myproject",
+          "required": true
         }
       ],
       "objects": [
