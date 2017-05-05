@@ -60,6 +60,12 @@
         {
           "description": "JVM options. These options will be passed to the JVM command line",
           "name": "JVM_OPTIONS"
+        },
+        {
+          "description": "Project that contains the base images",
+          "name": "BASE_IMAGE_PROJECT",
+          "required": true,
+          "value": "myproject"
         }
       ],
       "objects": [
@@ -124,6 +130,10 @@
                   {
                     "name": "BUILDER_STRATEGY",
                     "value": "${BUILDER_STRATEGY}"
+                  },
+                  {
+                    "name": "BASE_IMAGE_PROJECT",
+                    "valie": "${BASE_IMAGE_PROJECT}"
                   }
                 ]
               }

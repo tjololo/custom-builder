@@ -12,6 +12,7 @@ echo "OUTPUT_IMAGE: ${OUTPUT_IMAGE}"
 echo "PUSH_DOCKERCFG_PATH: ${PUSH_DOCKERCFG_PATH}"
 echo "DOCKER_SOCKET ${DOCKER_SOCKET}"
 echo "BUILDER_STRATEGY ${BUILDER_STRATEGY}"
+echo "BASE_IMAGE_PROJECT ${BASE_IMAGE_PROJECT}"
 echo "===End Variables==="
 echo ""
 
@@ -62,7 +63,7 @@ IMAGELABELS="--label net.tjololo.strategy.name=\"${BUILD_STRATEGY}\"
  --label net.tjololo.strategy.source.ref=\"${STRATEGY_SOURCE_REF}\"
  --label net.tjololo.strategy.source.repo=\"${STRATEGY_FOLDER}\""
 echo "Setting up complete Dockerfile from Docker.part"
-echo "FROM ${OUTPUT_REGISTRY}/${base_image_name}" > ${DOCKER_SOURCE_DIR}/Dockerfile
+echo "FROM ${OUTPUT_REGISTRY}/${BASE_IMAGE_PROJECT}/${base_image_name}" > ${DOCKER_SOURCE_DIR}/Dockerfile
 cat ${DOCKER_SOURCE_DIR}/Dockerfile.part >> ${DOCKER_SOURCE_DIR}/Dockerfile
 echo "Printing dockerfile"
 cat ${DOCKER_SOURCE_DIR}/Dockerfile
