@@ -1,287 +1,279 @@
 {
-  "kind": "List",
+  "kind": "Template",
   "apiVersion": "v1",
   "metadata": {
-    "name": "springboot-sti"
+    "name": "my-custom-builder",
+    "annotations": {
+      "description": "Source to Image for Spring Boot built with maven",
+      "iconClass": "icon-java",
+      "tags": "instant-app,springboot,java"
+    }
   },
-  "items": [
+  "message": "Created application $APPLICATION_NAME based on image ${BASE_IMAGE_PROJECT}/${BASE_IMAGE} buildt with the ${BUILDER_STRATEGY} strategy",
+  "labels": {
+    "createdBy": "my-custom-builder"
+  },
+  "parameters": [
     {
-      "kind": "Template",
+      "displayName": "Application name",
+      "description": "The name for the application.",
+      "name": "APPLICATION_NAME",
+      "value": "helloworld-mvn",
+      "required": true
+    },
+    {
+      "displayName": "Application hostname",
+      "description": "Custom hostname for service routes.  Leave blank for default hostname, e.g.: <application-name>.<project>.<default-domain-suffix>",
+      "name": "APPLICATION_HOSTNAME"
+    },
+    {
+      "displayName": "Git url",
+      "description": "Git source URI for application",
+      "name": "GIT_URI",
+      "value": "https://github.com/tjololo/springboot-sample-app.git",
+      "required": true
+    },
+    {
+      "displatName": "Git reference",
+      "description": "Git branch/tag reference",
+      "name": "GIT_REF",
+      "value": "master"
+    },
+    {
+      "displayName": "Git context dir",
+      "description": "Git Directory",
+      "name": "CONTEXT_DIR"
+    },
+    {
+      "displayName": "Build strategy",
+      "description": "What build strategy. Possible: mavn & gradle",
+      "name": "BUILDER_STRATEGY",
+      "value": "maven",
+      "required": true
+    },
+    {
+      "displayName": "Variables passed to the Application",
+      "description": "Application options. These options will be passed to the Spring Boot command line",
+      "name": "APP_OPTIONS"
+    },
+    {
+      "displayName": "Variables passed to the JVM",
+      "description": "JVM options. These options will be passed to the JVM command line",
+      "name": "JVM_OPTIONS"
+    },
+    {
+      "displatName": "Base image",
+      "description": "Base image to base your application on",
+      "name": "BASE_IMAGE",
+      "value": "java-base:latest",
+      "required": true
+    },
+    {
+      "displayName": "Project containing base image",
+      "description": "Project that contains the base images",
+      "name": "BASE_IMAGE_PROJECT",
+      "value": "myproject",
+      "required": true
+    }
+  ],
+  "objects": [
+    {
+      "kind": "ImageStream",
       "apiVersion": "v1",
       "metadata": {
-        "name": "my-custom-builder",
-        "annotations": {
-          "description": "Source to Image for Spring Boot built with maven",
-          "iconClass": "icon-java",
-          "tags": "instant-app,springboot,java"
+        "name": "${APPLICATION_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+          "name": "${APPLICATION_NAME}",
+          "app": "${APPLICATION_NAME}"
+        }
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "labels": {
+          "name": "${APPLICATION_NAME}",
+          "app": "${APPLICATION_NAME}"
         }
       },
-      "labels": {
-        "createdBy": "my-custom-builder"
-      },
-      "parameters": [
-        {
-          "displayName": "Application name",
-          "description": "The name for the application.",
-          "name": "APPLICATION_NAME",
-          "value": "helloworld-mvn",
-          "required": true
-        },
-        {
-          "displayName": "Application hostname",
-          "description": "Custom hostname for service routes.  Leave blank for default hostname, e.g.: <application-name>.<project>.<default-domain-suffix>",
-          "name": "APPLICATION_HOSTNAME"
-        },
-        {
-          "displayName": "Git url",
-          "description": "Git source URI for application",
-          "name": "GIT_URI",
-          "value": "https://github.com/tjololo/springboot-sample-app.git",
-          "required": true
-        },
-        {
-          "displatName": "Git reference",
-          "description": "Git branch/tag reference",
-          "name": "GIT_REF",
-          "value": "master"
-        },
-        {
-          "displayName": "Git context dir",
-          "description": "Git Directory",
-          "name": "CONTEXT_DIR"
-        },
-        {
-          "displayName": "Build strategy",
-          "description": "What build strategy. Possible: mavn & gradle",
-          "name": "BUILDER_STRATEGY",
-          "value": "maven",
-          "required": true
-        },
-        {
-          "displayName": "Variables passed to the Application",
-          "description": "Application options. These options will be passed to the Spring Boot command line",
-          "name": "APP_OPTIONS"
-        },
-        {
-          "displayName": "Variables passed to the JVM",
-          "description": "JVM options. These options will be passed to the JVM command line",
-          "name": "JVM_OPTIONS"
-        },
-        {
-          "displatName": "Base image",
-          "description": "Base image to base your application on",
-          "name": "BASE_IMAGE",
-          "value": "java-base:latest",
-          "required": true
-        },
-        {
-          "displayName": "Project containing base image",
-          "description": "Project that contains the base images",
-          "name": "BASE_IMAGE_PROJECT",
-          "value": "myproject",
-          "required": true
-        }
-      ],
-      "objects": [
-        {
-          "kind": "ImageStream",
-          "apiVersion": "v1",
-          "metadata": {
-            "name": "${APPLICATION_NAME}",
-            "creationTimestamp": null,
-            "labels": {
-              "name": "${APPLICATION_NAME}",
-              "app": "${APPLICATION_NAME}"
-            }
-          }
-        },
-        {
-          "kind": "BuildConfig",
-          "apiVersion": "v1",
-          "metadata": {
-            "name": "${APPLICATION_NAME}",
-            "labels": {
-              "name": "${APPLICATION_NAME}",
-              "app": "${APPLICATION_NAME}"
+      "spec": {
+        "triggers": [
+          {
+            "type": "GitHub",
+            "github": {
+              "secret": "${GITHUB_TRIGGER_SECRET}"
             }
           },
-          "spec": {
-            "triggers": [
-              {
-                "type": "GitHub",
-                "github": {
-                  "secret": "${GITHUB_TRIGGER_SECRET}"
-                }
-              },
-              {
-                "type": "Generic",
-                "generic": {
-                  "secret": "${GENERIC_TRIGGER_SECRET}"
-                }
-              },
-              {
-                "type": "ImageChange",
-                "imageChange": {}
-              },
-              {
-                "type": "ImageChange",
-                "imageChange": {
-                  "from": {
-                    "kind": "ImageStreamTag",
-                    "name": "${BASE_IMAGE}",
-                    "namespace": "${BASE_IMAGE_PROJECT}"
-                  }
-                }
+          {
+            "type": "Generic",
+            "generic": {
+              "secret": "${GENERIC_TRIGGER_SECRET}"
+            }
+          },
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          },
+          {
+            "type": "ImageChange",
+            "imageChange": {
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "${BASE_IMAGE}",
+                "namespace": "${BASE_IMAGE_PROJECT}"
               }
-            ],
-            "source": {
-              "type": "Git",
-              "git": {
-                "uri": "${GIT_URI}",
-                "ref": "${GIT_REF}"
+            }
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "${GIT_URI}",
+            "ref": "${GIT_REF}"
+          },
+          "contextDir": "${CONTEXT_DIR}"
+        },
+        "strategy": {
+          "type": "Custom",
+          "customStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "custom-builder:latest"
+            },
+            "exposeDockerSocket": true,
+            "env": [
+              {
+                "name": "BUILDER_STRATEGY",
+                "value": "${BUILDER_STRATEGY}"
               },
-              "contextDir": "${CONTEXT_DIR}"
-            },
-            "strategy": {
-              "type": "Custom",
-              "customStrategy": {
-                "from": {
-                  "kind": "ImageStreamTag",
-                  "name": "custom-builder:latest"
-                },
-                "exposeDockerSocket": true,
-                "env": [
-                  {
-                    "name": "BUILDER_STRATEGY",
-                    "value": "${BUILDER_STRATEGY}"
-                  },
-                  {
-                    "name": "BASE_IMAGE_PROJECT",
-                    "value": "${BASE_IMAGE_PROJECT}"
-                  },
-                  {
-                    "name": "BASE_IMAGE",
-                    "value": "${BASE_IMAGE}"
-                  }
-                ]
+              {
+                "name": "BASE_IMAGE_PROJECT",
+                "value": "${BASE_IMAGE_PROJECT}"
+              },
+              {
+                "name": "BASE_IMAGE",
+                "value": "${BASE_IMAGE}"
               }
-            },
-            "output": {
-              "to": {
+            ]
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "${APPLICATION_NAME}:latest"
+          }
+        },
+        "resources": {}
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "labels": {
+          "name": "${APPLICATION_NAME}",
+          "app": "${APPLICATION_NAME}"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+          "rollingParams": {
+            "updatePeriodSeconds": 1,
+            "intervalSeconds": 1,
+            "timeoutSeconds": 120
+          },
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${APPLICATION_NAME}"
+              ],
+              "from": {
                 "kind": "ImageStreamTag",
                 "name": "${APPLICATION_NAME}:latest"
               }
-            },
-            "resources": {}
+            }
           }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "${APPLICATION_NAME}"
         },
-        {
-          "kind": "DeploymentConfig",
-          "apiVersion": "v1",
+        "template": {
           "metadata": {
-            "name": "${APPLICATION_NAME}",
             "labels": {
-              "name": "${APPLICATION_NAME}",
-              "app": "${APPLICATION_NAME}"
+              "name": "${APPLICATION_NAME}"
             }
           },
           "spec": {
-            "strategy": {
-              "type": "Rolling",
-              "rollingParams": {
-                "updatePeriodSeconds": 1,
-                "intervalSeconds": 1,
-                "timeoutSeconds": 120
-              },
-              "resources": {}
-            },
-            "triggers": [
+            "containers": [
               {
-                "type": "ConfigChange"
-              },
-              {
-                "type": "ImageChange",
-                "imageChangeParams": {
-                  "automatic": true,
-                  "containerNames": [
-                    "${APPLICATION_NAME}"
-                  ],
-                  "from": {
-                    "kind": "ImageStreamTag",
-                    "name": "${APPLICATION_NAME}:latest"
-                  }
-                }
-              }
-            ],
-            "replicas": 1,
-            "selector": {
-              "name": "${APPLICATION_NAME}"
-            },
-            "template": {
-              "metadata": {
-                "labels": {
-                  "name": "${APPLICATION_NAME}"
-                }
-              },
-              "spec": {
-                "containers": [
+                "name": "${APPLICATION_NAME}",
+                "image": "${APPLICATION_NAME}",
+                "ports": [
                   {
-                    "name": "${APPLICATION_NAME}",
-                    "image": "${APPLICATION_NAME}",
-                    "ports": [
-                      {
-                        "containerPort": 8080,
-                        "protocol": "TCP"
-                      }
-                    ],
-                    "readynessProbe": {
-                      "tcpSocket": {
-                        "port": 8080
-                      },
-                      "initialDelaySeconds": 10,
-                      "timeoutSeconds": 5
-                    },
-                    "resources": {},
-                    "terminationMessagePath": "/dev/termination-log",
-                    "imagePullPolicy": "IfNotPresent",
-                    "securityContext": {
-                      "capabilities": {},
-                      "privileged": false
-                    }
+                    "containerPort": 8080,
+                    "protocol": "TCP"
                   }
                 ],
-                "restartPolicy": "Always",
-                "dnsPolicy": "ClusterFirst"
-              }
-            }
-          }
-        },
-        {
-          "kind": "Service",
-          "apiVersion": "v1",
-          "metadata": {
-            "name": "${APPLICATION_NAME}",
-            "labels": {
-              "name": "${APPLICATION_NAME}",
-              "app": "${APPLICATION_NAME}"
-            }
-          },
-          "spec": {
-            "ports": [
-              {
-                "name": "${APPLICATION_NAME}-http",
-                "port": 8080,
-                "targetPort": 8080
+                "readynessProbe": {
+                  "tcpSocket": {
+                    "port": 8080
+                  },
+                  "initialDelaySeconds": 10,
+                  "timeoutSeconds": 5
+                },
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "IfNotPresent",
+                "securityContext": {
+                  "capabilities": {},
+                  "privileged": false
+                }
               }
             ],
-            "selector": {
-              "name": "${APPLICATION_NAME}"
-            },
-            "type": "ClusterIP",
-            "sessionAffinity": "None"
+            "restartPolicy": "Always",
+            "dnsPolicy": "ClusterFirst"
           }
         }
-      ]
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "labels": {
+          "name": "${APPLICATION_NAME}",
+          "app": "${APPLICATION_NAME}"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "${APPLICATION_NAME}-http",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "name": "${APPLICATION_NAME}"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      }
     }
   ]
 }
