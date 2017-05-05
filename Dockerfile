@@ -17,7 +17,7 @@ RUN mkdir -p /usr/lib/gradle \
 ADD gradle-bin.zip /usr/lib/gradle/
 
 RUN set -x \
-     && apk add --no-cache wget \
+     && apk add --no-cache wget curl \
      && apk add --no-cache git="${GIT_VERSION}" \
      && apk add --no-cache maven="${MAVEN_VERSION}" \
      && apk add --no-cache docker="${DOCKER_VERSION}" \
