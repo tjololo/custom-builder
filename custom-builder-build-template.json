@@ -65,7 +65,7 @@
           "description": "Project that contains the base images",
           "name": "BASE_IMAGE",
           "required": true,
-          "value": "java-base"
+          "value": "java-base:latest"
         },
         {
           "description": "Project that contains the base images",
