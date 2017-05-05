@@ -38,7 +38,9 @@ fi
 echo "Executing custom buildstrategy: ${BUILDER_STRATEGY}"
 cd $STRATEGY_FOLDER
 eval $(parse_yaml inventory.yml "config_")
-strategy_key="config_strategy_$BUILDER_STRATEGY"
+strategy_key="config_strategy_${BUILDER_STRATEGY}_script"
+strategy_image_key="config_strategy_${BUILDER_STRATEGY}_image"
+base_image_name=$(value_of $strategy_image_key)
 strategy=$(value_of $strategy_key)
 if [ -z "$strategy" ]; then
         echo "Strategy $1 not found in inventoryfile"
@@ -59,8 +61,17 @@ echo "Gathering build facts"
 IMAGELABELS="--label net.tjololo.strategy.name=\"${BUILD_STRATEGY}\"
  --label net.tjololo.strategy.source.ref=\"${STRATEGY_SOURCE_REF}\"
  --label net.tjololo.strategy.source.repo=\"${STRATEGY_FOLDER}\""
+echo "Setting up complete Dockerfile from Docker.part"
+echo "FROM ${OUTPUT_REGISTRY}/${base_image_name}" > ${DOCKER_SOURCE_DIR}/Dockerfile
+cat ${DOCKER_SOURCE_DIR}/Dockerfile.part >> ${DOCKER_SOURCE_DIR}/Dockerfile
+echo "Printing dockerfile"
+cat ${DOCKER_SOURCE_DIR}/Dockerfile
 echo "Starting docker build"
 docker build --rm ${IMAGELABELS} -t ${TAG} ${DOCKER_SOURCE_DIR}
+if [ $? != 0 ]; then
+	echo "Error during build of docker image. Please check custom strategy $strategy"
+	exit 1
+fi
 if [[ -d /var/run/secrets/openshift.io/push ]] && [[ ! -e /root/.dockercfg ]]; then
   cp /var/run/secrets/openshift.io/push/.dockercfg /root/.dockercfg
 fi
