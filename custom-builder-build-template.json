@@ -62,7 +62,7 @@
           "name": "JVM_OPTIONS"
         },
         {
-          "description": "Project that contains the base images",
+          "description": "Base image to base your application on",
           "name": "BASE_IMAGE",
           "required": true,
           "value": "java-base:latest"
