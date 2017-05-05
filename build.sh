@@ -20,9 +20,10 @@ echo ""
 
 
 #Running the actual build and push
+STRATEGY_GIT_URI="https://github.com/tjololo/custom-build-strategies.git"
 echo "Fetching custom buildstrategies"
 STRATEGY_FOLDER=$(mktemp -d)
-git clone --recursive "https://github.com/tjololo/custom-build-strategies.git" ${STRATEGY_FOLDER}
+git clone --recursive $STRATEGY_GIT_URI ${STRATEGY_FOLDER}
 if [ $? != 0 ]; then
 	echo "Error trying to fetch custom buildstrategies"
 	exit 1
@@ -58,16 +59,21 @@ fi
 
 #Execute docker build and push
 echo "Gathering build facts"
-IMAGELABELS="--label net.tjololo.strategy.name=\"${BUILD_STRATEGY}\"
- --label net.tjololo.strategy.source.ref=\"${STRATEGY_SOURCE_REF}\"
- --label net.tjololo.strategy.source.repo=\"${STRATEGY_FOLDER}\""
+CURRENT_FOLDER=$(pwd)
+cd $STRATEGY_FOLDER
+STRATEGY_SOURCE_REF=$(git rev-parse HEAD)
+cd $CURRENT_FOLDER
 echo "Setting up complete Dockerfile from Docker.part"
 echo "FROM ${OUTPUT_REGISTRY}/${BASE_IMAGE_PROJECT}/${BASE_IMAGE}" > ${DOCKER_SOURCE_DIR}/Dockerfile
 cat ${DOCKER_SOURCE_DIR}/Dockerfile.part >> ${DOCKER_SOURCE_DIR}/Dockerfile
 echo "Printing dockerfile"
 cat ${DOCKER_SOURCE_DIR}/Dockerfile
 echo "Starting docker build"
-docker build --rm ${IMAGELABELS} -t ${TAG} ${DOCKER_SOURCE_DIR}
+docker build --rm \
+    --label net.tjololo.strategy.name="${BUILD_STRATEGY}" \
+    --label net.tjololo.strategy.ref="${STRATEGY_SOURCE_REF}" \
+    --label net.tjololo.strategy.repo="${STRATEGY_GIT_URI}" \
+    -t ${TAG} ${DOCKER_SOURCE_DIR}
 if [ $? != 0 ]; then
 	echo "Error during build of docker image. Please check custom strategy $strategy"
 	exit 1
