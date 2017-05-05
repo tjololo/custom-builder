@@ -70,7 +70,7 @@ echo "Printing dockerfile"
 cat ${DOCKER_SOURCE_DIR}/Dockerfile
 echo "Starting docker build"
 docker build --rm \
-    --label net.tjololo.strategy.name="${BUILD_STRATEGY}" \
+    --label net.tjololo.strategy.name="${BUILDER_STRATEGY}" \
     --label net.tjololo.strategy.ref="${STRATEGY_SOURCE_REF}" \
     --label net.tjololo.strategy.repo="${STRATEGY_GIT_URI}" \
     -t ${TAG} ${DOCKER_SOURCE_DIR}
