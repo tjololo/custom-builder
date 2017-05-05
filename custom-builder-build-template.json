@@ -63,6 +63,12 @@
         },
         {
           "description": "Project that contains the base images",
+          "name": "BASE_IMAGE",
+          "required": true,
+          "value": "java-base"
+        },
+        {
+          "description": "Project that contains the base images",
           "name": "BASE_IMAGE_PROJECT",
           "required": true,
           "value": "myproject"
@@ -134,6 +140,10 @@
                   {
                     "name": "BASE_IMAGE_PROJECT",
                     "value": "${BASE_IMAGE_PROJECT}"
+                  },
+                  {
+                    "name": "BASE_IMAGE",
+                    "value": "${BASE_IMAGE}"
                   }
                 ]
               }

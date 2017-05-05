@@ -12,6 +12,7 @@ echo "OUTPUT_IMAGE: ${OUTPUT_IMAGE}"
 echo "PUSH_DOCKERCFG_PATH: ${PUSH_DOCKERCFG_PATH}"
 echo "DOCKER_SOCKET ${DOCKER_SOCKET}"
 echo "BUILDER_STRATEGY ${BUILDER_STRATEGY}"
+echo "BASE_IMAGE ${BASE_IMAGE}"
 echo "BASE_IMAGE_PROJECT ${BASE_IMAGE_PROJECT}"
 echo "===End Variables==="
 echo ""
@@ -40,8 +41,6 @@ echo "Executing custom buildstrategy: ${BUILDER_STRATEGY}"
 cd $STRATEGY_FOLDER
 eval $(parse_yaml inventory.yml "config_")
 strategy_key="config_strategy_${BUILDER_STRATEGY}_script"
-strategy_image_key="config_strategy_${BUILDER_STRATEGY}_image"
-base_image_name=$(value_of $strategy_image_key)
 strategy=$(value_of $strategy_key)
 if [ -z "$strategy" ]; then
         echo "Strategy $1 not found in inventoryfile"
@@ -63,7 +62,7 @@ IMAGELABELS="--label net.tjololo.strategy.name=\"${BUILD_STRATEGY}\"
  --label net.tjololo.strategy.source.ref=\"${STRATEGY_SOURCE_REF}\"
  --label net.tjololo.strategy.source.repo=\"${STRATEGY_FOLDER}\""
 echo "Setting up complete Dockerfile from Docker.part"
-echo "FROM ${OUTPUT_REGISTRY}/${BASE_IMAGE_PROJECT}/${base_image_name}" > ${DOCKER_SOURCE_DIR}/Dockerfile
+echo "FROM ${OUTPUT_REGISTRY}/${BASE_IMAGE_PROJECT}/${BASE_IMAGE}" > ${DOCKER_SOURCE_DIR}/Dockerfile
 cat ${DOCKER_SOURCE_DIR}/Dockerfile.part >> ${DOCKER_SOURCE_DIR}/Dockerfile
 echo "Printing dockerfile"
 cat ${DOCKER_SOURCE_DIR}/Dockerfile
