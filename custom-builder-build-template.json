@@ -114,6 +114,16 @@
               {
                 "type": "ImageChange",
                 "imageChange": {}
+              },
+              {
+                "type": "ImageChange",
+                "imageChange": {
+                  "from": {
+                    "kind": "ImageStreamTag",
+                    "name": "${BASE_IMAGE}",
+                    "namespace": "${BASE_IMAGE_PROJECT}"
+                  }
+                }
               }
             ],
             "source": {
