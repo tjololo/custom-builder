@@ -133,7 +133,7 @@
                   },
                   {
                     "name": "BASE_IMAGE_PROJECT",
-                    "valie": "${BASE_IMAGE_PROJECT}"
+                    "value": "${BASE_IMAGE_PROJECT}"
                   }
                 ]
               }
