@@ -18,11 +18,11 @@ ADD gradle-bin.zip /usr/lib/gradle/
 
 RUN set -x \
      && apk add --no-cache wget curl \
-     && apk add --no-cache git>"${GIT_VERSION}" \
-     && apk add --no-cache maven>"${MAVEN_VERSION}" \
-     && apk add --no-cache docker>"${DOCKER_VERSION}" \
-     && apk add --no-cache jq>"${JQ_VERSION}" \
-     && apk add --no-cache nodejs>"${NODEJS_VERSION}" \
+     && apk add --no-cache 'git<"${GIT_VERSION}"' \
+     && apk add --no-cache 'maven<"${MAVEN_VERSION}"' \
+     && apk add --no-cache 'docker<"${DOCKER_VERSION}"' \
+     && apk add --no-cache 'jq<"${JQ_VERSION}"' \
+     && apk add --no-cache 'nodejs<"${NODEJS_VERSION}"' \
 #     && mkdir -p /usr/lib/gradle \
 #     && wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -O /usr/lib/gradle/gradle-bin.zip \
      && unzip /usr/lib/gradle/gradle-bin.zip -d /usr/lib/gradle \
