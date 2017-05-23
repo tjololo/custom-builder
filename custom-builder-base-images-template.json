@@ -49,7 +49,7 @@
         "creationTimestamp": null,
         "labels": {
           "name": "slave-gradle",
-          "group": "custom-builder"
+          "group": "custom-builder",
           "role": "jenkins-slave"
         }
       }
