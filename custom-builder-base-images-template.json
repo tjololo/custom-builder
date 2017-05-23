@@ -42,6 +42,19 @@
       }
     },
     {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "slave-gradle",
+        "creationTimestamp": null,
+        "labels": {
+          "name": "slave-gradle",
+          "group": "custom-builder"
+          "role": "jenkins-slave"
+        }
+      }
+    },
+    {
       "kind": "BuildConfig",
       "apiVersion": "v1",
       "metadata": {
@@ -153,6 +166,41 @@
           "to": {
             "kind": "ImageStreamTag",
             "name": "base:latest"
+          }
+        }
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "slave-gradle",
+        "labels": {
+          "name": "slave-gradle",
+          "group": "custom-builder"
+        }
+      },
+      "spec": {
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "https://github.com/tjololo/jenkins.git",
+            "ref": "master"
+          },
+          "contextDir": "slave-gradle"
+        },
+        "strategy": {
+          "type": "Docker"
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "slave-gradle:latest"
           }
         }
       }
